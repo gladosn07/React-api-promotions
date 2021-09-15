@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import axios from 'axios'
 import './Form.css'
@@ -10,9 +10,19 @@ const initialValue = {
     price: 0,
 }
 
-const PromotionForm = () => {
-    const [values, setValues] = useState(initialValue);
+const PromotionForm = ({ id }) => {
+    const [values, setValues] = useState(id ? null : initialValue);
     const history = useHistory()
+
+    useEffect(() => {
+        if(id) {
+            axios.get(`http://localhost:5000/promotions/${id}`)
+            .then((res) => {
+                setValues(res.data)
+            })
+        }
+        
+    },[])
 
     function onChange(e) {
         const { name, value } = e.target;
@@ -22,11 +32,22 @@ const PromotionForm = () => {
 
     function onSubmit(e) {
         e.preventDefault();
+        
+        const method = id ? 'put' : 'post';
+        const url = id 
+        ? `http://localhost:5000/promotions/${id}` 
+        : `http://localhost:5000/promotions`
 
-        axios.post('http://localhost:5000/promotions', values)
+        axios[method](url, values)
         .then((res) => {
             history.push('/')
         })
+    }
+
+    if(!values) {
+        return (
+            <div>Carregando...</div>
+        )
     }
 
     return (
@@ -37,22 +58,22 @@ const PromotionForm = () => {
             <form onSubmit={onSubmit}>
                 <div className='promotion-form_group'>
                     <label htmlFor='title'>título</label>
-                    <input type='text' id='title' name='title' onChange={onChange}/>
+                    <input type='text' id='title' name='title' onChange={onChange} value={values.title}/>
                 </div>
                 
                 <div className='promotion-form_group'>
                     <label htmlFor='url'>Link</label>
-                    <input type='url' id='url' name='url' onChange={onChange}/>
+                    <input type='url' id='url' name='url' onChange={onChange} value={values.url}/>
                 </div>
 
                 <div className='promotion-form_group'>
                     <label htmlFor='imageUrl'>Imagem (URL)</label>
-                    <input type='imageUrl' id='imageUrl' name='imageUrl' onChange={onChange}/>
+                    <input type='imageUrl' id='imageUrl' name='imageUrl' onChange={onChange} value={values.imageUrl}/>
                 </div>
 
                 <div className='promotion-form_group'>
                     <label htmlFor='price'>Preço</label>
-                    <input type='number' id='price' name='price' onChange={onChange}/>
+                    <input type='number' id='price' name='price' onChange={onChange} value={values.price}/>
                 </div>
 
                 <div>
