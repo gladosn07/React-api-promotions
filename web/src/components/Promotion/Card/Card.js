@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Card.css";
 
 function PromotionCard({ promotion }) {
@@ -31,6 +32,7 @@ function PromotionCard({ promotion }) {
           >
             Ir para o site
           </a>
+          <Link to={`/edit/${promotion.id}`}>Editar</Link>
         </footer>
       </div>
     </div>
